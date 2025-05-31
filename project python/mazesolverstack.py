@@ -1,4 +1,4 @@
-print("hi")
-print("hi1")
-print("hi2")
-print("hi3")
+a = 0
+b = 5
+
+print(a+b)
