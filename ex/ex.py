@@ -1,21 +1,44 @@
 import os
+import time
 
 class MazeSolverStack:
-    def __init__(self, maze):
-        self.maze = maze
-        self.start = (0, 1)
-        self.end = (7, 7)
+    def __init__(self, maze, start, end):
+        self.maze = [row[:] for row in maze]  # ایجاد کپی برای تغییرات
+        self.start = start
+        self.end = end
+        self.visited = set()
 
-    def move_maz(self, x, y):
-        if self.maze[x][y] == 0:
-            self.maze[x][y] = '*'  # نشان‌گذاری مسیر طی‌شده
+    def solve(self):
+        stack = [self.start]
+        moves = [(0, 1), (1, 0), (0, -1), (-1, 0)]  # راست، پایین، چپ، بالا
 
-    def start_max(self):
-        for i in range(len(self.maze)):
-            for j in range(len(self.maze[i])):
-                if i == 0 or i == 7 or j == 0 or j == 7:
-                    if (i, j) != self.end:
-                        self.move_maz(i, j)
+        while stack:
+            x, y = stack.pop()
+            if (x, y) == self.end:
+                self.maze[x][y] = 'E'  # علامت پایان مسیر
+                self.show_maze()
+                return True
+
+            if (x, y) in self.visited:
+                continue
+
+            self.visited.add((x, y))
+            self.maze[x][y] = '*'  # مسیر طی‌شده
+            self.show_maze()
+
+            for dx, dy in moves:
+                nx, ny = x + dx, y + dy
+                if 0 <= nx < len(self.maze) and 0 <= ny < len(self.maze[0]) and self.maze[nx][ny] == 0:
+                    stack.append((nx, ny))
+
+            time.sleep(0.5)  # وقفه برای مشاهده تغییرات
+
+        return False
+
+    def show_maze(self):
+        for row in self.maze:
+            print(" ".join(map(str, row)))
+        print("\n" + "-" * 20)
 
 def main():
     maz = [
@@ -29,12 +52,14 @@ def main():
         [1,1,1,1,1,0,0,0]
     ]
 
-    solver = MazeSolverStack(maz)
-    solver.start_max()
+    start = (0, 1)  # نقطه شروع
+    end = (7, 7)  # نقطه پایان
 
-    # نمایش هزار‌تو
-    for row in maz:
-        print(" ".join(map(str, row)))
+    solver = MazeSolverStack(maz, start, end)
+    if solver.solve():
+        print("مسیر پیدا شد!")
+    else:
+        print("مسیر یافت نشد!")
 
 if __name__ == "__main__":
     main()
